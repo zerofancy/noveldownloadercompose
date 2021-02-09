@@ -16,11 +16,17 @@ fun craw(
 ) {
     driver.get(urlForFirstPage)
     while (true) {
+        var previousContent = ""
         for (i in 1..retryTimes) {
             try {
                 val eleTitle = driver.findElement(By.xpath(xpathTitle))
                 val eleContent = driver.findElement(By.xpath(xpathContent))
-                val content = "# ${eleTitle.text}\n\n${eleContent.text}\n\n"
+                val content = "# ${eleTitle.text}\n\n${eleContent.text.replace("\n", "\n\n")}\n\n"
+                if (previousContent == content) {
+                    println("章节重复，抓取完成，准备退出...")
+                    break
+                }
+                previousContent = content
                 println("Download 《${eleTitle.text}》 success! ")
                 writeToFileAppend(targetFile, content)
                 break
